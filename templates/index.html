@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit and Execute Code</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
+    <link rel="stylesheet" href="/static/css/style.css"> <!-- Ensure this path is correct -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/anyword-hint.min.js"></script>
+</head>
+<body>
+    <div id="left-container">
+        <h2>Edit Method</h2>
+        <textarea id="code"></textarea>
+        <button onclick="loadMethod()">Load Method</button>
+        <button onclick="saveMethod()">Save Method</button>
+    </div>
+    <div id="right-container">
+    <h2>Execute Method</h2>
+    <!-- Place this inside your existing HTML structure where appropriate -->
+    <label for="method-select">Choose a method:</label>
+    <select id="method-select">
+    <!-- Options will be added here by JavaScript -->
+    </select>
+
+    <textarea id="input-dict" placeholder="Enter dict here..."></textarea>
+    <button onclick="executeCode()">Execute</button>
+    <div id="output">Output will be shown here...</div>
+</div>
+
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
