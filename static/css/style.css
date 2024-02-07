@@ -1,13 +1,25 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
+    flex-direction: column; /* Stack children vertically */
     height: 100vh;
     margin: 0;
     overflow: hidden;
 }
 
+#select-container {
+    text-align: center;
+    padding: 20px; /* Adjust padding as needed */
+}
+
+#containers-wrapper {
+    display: flex; /* This will place left and right containers side by side */
+    flex: 1; /* Take up remaining space */
+    overflow: auto; /* Handle any overflow */
+}
+
 #left-container, #right-container {
-    flex: 1;
+    flex: 1; /* Each container will take up half the space */
     padding: 20px;
     display: flex;
     flex-direction: column;

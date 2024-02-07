@@ -13,7 +13,7 @@ methods = {
         res.append(f'{key}: {val}')
     
     return res''',
-    "example_method2": '''def example_method(d: dict):
+    "example_method2": '''def example_method2(d: dict):
     res = []
     for key, val in d.items():
         res.append(f'{key} -> {val}')
@@ -39,10 +39,10 @@ def save_method(method_name):
     methods[method_name] = code
     return jsonify({"message": "Method saved successfully."})
 
-@app.route('/execute_code', methods=['POST'])
-def execute_code():
+@app.route('/execute_code/<method_name>', methods=['POST'])
+def execute_code(method_name):
     data = request.json
-    code = data['code'] + '\nresult = example_method(input_dict)'  # Ensure 'result' is being set
+    code = methods[method_name] + f'\nresult = {method_name}(input_dict)'  # Ensure 'result' is being set
     input_dict = data['input_dict']
     try:
         local_namespace = {'input_dict': input_dict}
