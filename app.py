@@ -16,9 +16,8 @@ def index():
 
 @app.route('/get_method/<method_name>', methods=['GET'])
 def get_method(method_name):
-    method = MethodController.get_method(method_name)
-    if method:
-        method_code = inspect.getsource(method)
+    method_code = MethodController.get_method_code(method_name)
+    if method_code:
         return jsonify({"code": method_code})
     else:
         return jsonify({"message": "Method not found."})
@@ -46,16 +45,17 @@ def get_method_names():
 @app.route('/save_method/<method_name>', methods=['POST'])
 def save_method(method_name):
     data = request.json
-    code = data.get('code')
+    initial_code = data.get('code')
+    code = initial_code
     if code.startswith('@MethodController.get_current_version'):
         code = code[len('@MethodController.get_current_version'):]
     if code:
         try:
             MethodController.ignore_current = True
-            namespace = globals().copy()  # Копируем глобальное пространство имен
+            namespace = globals().copy()
             exec(code, namespace)
             method = namespace[method_name]
-            MethodController.methods[method_name] = method
+            MethodController.methods[method_name] = method, initial_code
             MethodController.ignore_current = False
             return jsonify({"message": "Method saved successfully."})
         except Exception as e:

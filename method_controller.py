@@ -1,3 +1,6 @@
+import inspect
+
+
 class MethodController:
     methods = {}
     ignore_current = False
@@ -6,7 +9,7 @@ class MethodController:
     def register_method(name):
         def decorator(func):
             if name not in MethodController.methods:
-                MethodController.methods[name] = func
+                MethodController.methods[name] = func, None
             return func
 
         return decorator
@@ -27,7 +30,18 @@ class MethodController:
 
         return decorator
 
+    @staticmethod
+    def get_method_code(name):
+        method = MethodController.methods.get(name, None)
+        if method is None:
+            return None
+        if method[1]:
+            return method[1]
+        return inspect.getsource(method[0])
+
 
     @staticmethod
     def get_method(name):
-        return MethodController.methods.get(name, None)
+        return MethodController.methods.get(name)[0]
+
+
