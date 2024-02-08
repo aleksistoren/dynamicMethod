@@ -1,61 +1,61 @@
-from typing import Dict
+import ast
+import inspect
 
 from flask import Flask, request, jsonify, render_template
 
+from method_controller import MethodController
+import methods
+
 app = Flask(__name__)
-
-# Dummy storage for method code
-methods = {
-    #"example_method": "def example_method(d: Dict):\n    print('Hello, World!')\n"
-    "example_method": '''def example_method(d: dict):
-    res = []
-    for key, val in d.items():
-        res.append(f'{key}: {val}')
-    
-    return res''',
-    "example_method2": '''def example_method2(d: dict):
-    res = []
-    for key, val in d.items():
-        res.append(f'{key} -> {val}')
-
-    return res''',
-
-}
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/get_method/<method_name>', methods=['GET'])
 def get_method(method_name):
-    code = methods.get(method_name, "Method not found.")
-    return jsonify({"code": code})
+    method = MethodController.get_method(method_name)
+    if method:
+        method_code = inspect.getsource(method)
+        return jsonify({"code": method_code})
+    else:
+        return jsonify({"message": "Method not found."})
 
-
-@app.route('/save_method/<method_name>', methods=['POST'])
-def save_method(method_name):
-    code = request.json.get('code')
-    methods[method_name] = code
-    return jsonify({"message": "Method saved successfully."})
 
 @app.route('/execute_code/<method_name>', methods=['POST'])
 def execute_code(method_name):
     data = request.json
-    code = methods[method_name] + f'\nresult = {method_name}(input_dict)'  # Ensure 'result' is being set
-    input_dict = data['input_dict']
-    try:
-        local_namespace = {'input_dict': input_dict}
-        exec(code, {}, local_namespace)
-        result = local_namespace.get('result', 'No result returned.')
-        return jsonify({'result': str(result)})
-    except Exception as e:
-        return jsonify({'error': str(e)})
+    method = MethodController.get_method(method_name)
+    if method:
+        try:
+            result = method(data['input_dict'])
+            return jsonify({'result': result})
+        except Exception as e:
+            return jsonify({'error': str(e)})
+    else:
+        return jsonify({"error": "Method not found."})
+
 
 @app.route('/get_method_names', methods=['GET'])
 def get_method_names():
-    return jsonify(list(methods.keys()))
+    return jsonify(list(MethodController.methods.keys()))
 
+
+@app.route('/save_method/<method_name>', methods=['POST'])
+def save_method(method_name):
+    data = request.json
+    code = data.get('code')
+    if code:
+        try:
+            namespace = globals().copy()  # Копируем глобальное пространство имен
+            exec(code, namespace)
+            method = namespace[method_name]
+            MethodController.methods[method_name]=method
+            return jsonify({"message": "Method saved successfully."})
+        except Exception as e:
+            return jsonify({"error": str(e)})
+    else:
+        return jsonify({"error": "Code not provided."})
 
 if __name__ == '__main__':
     app.run(debug=True)
