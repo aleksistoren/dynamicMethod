@@ -4,13 +4,15 @@ import inspect
 from flask import Flask, request, jsonify, render_template
 
 from method_controller import MethodController
-import methods
+from methods import example_method, example_method2
 
 app = Flask(__name__)
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/get_method/<method_name>', methods=['GET'])
 def get_method(method_name):
@@ -47,15 +49,23 @@ def save_method(method_name):
     code = data.get('code')
     if code:
         try:
+            MethodController.ignore_current = True
             namespace = globals().copy()  # Копируем глобальное пространство имен
             exec(code, namespace)
             method = namespace[method_name]
-            MethodController.methods[method_name]=method
+            MethodController.methods[method_name] = method
+            MethodController.ignore_current = False
             return jsonify({"message": "Method saved successfully."})
         except Exception as e:
             return jsonify({"error": str(e)})
     else:
         return jsonify({"error": "Code not provided."})
+
+
+@app.route('/get_me', methods=['GET'])
+def get_me():
+    return example_method({"XXX": "YYY"})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
