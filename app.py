@@ -47,6 +47,8 @@ def get_method_names():
 def save_method(method_name):
     data = request.json
     code = data.get('code')
+    if code.startswith('@MethodController.get_current_version'):
+        code = code[len('@MethodController.get_current_version'):]
     if code:
         try:
             MethodController.ignore_current = True

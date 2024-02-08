@@ -16,7 +16,6 @@ class MethodController:
         def decorator(func):
             def wrapper(*args, **kwargs):
                 if not MethodController.ignore_current and name in MethodController.methods:
-                    # Временно игнорируем текущую версию для предотвращения рекурсии.
                     MethodController.ignore_current = True
                     result = MethodController.methods[name](*args, **kwargs)
                     MethodController.ignore_current = False
